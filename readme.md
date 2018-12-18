@@ -13,7 +13,7 @@
 ### Project Sensor Modules
 * [HTU21D](https://www.banggood.com/GY-213V-HTU21D-3_3V-I2C-Temperature-Humidity-Sensor-Module-For-Arduino-p-1184748.html?p=FX25081395033201503Y) - Humidity Sensor
 	- [HTU21D  Datasheet](http://www.farnell.com/datasheets/1780639.pdf) - Datasheet
-
+* [LDR](http://www.resistorguide.com/photoresistor/) - Light dependent resistor
 <p align="center">
 	<img src="/images/si_draft1.png">
 </p>
