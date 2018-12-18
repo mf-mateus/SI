@@ -17,3 +17,8 @@
 <p align="center">
 	<img src="/images/si_draft1.png">
 </p>
+
+### How it Works
+* ESP8266 Reads all data from sensors (Humidity/Light/Odometry-encoder)
+* ESP8266 Sends data to RaspberryPi (using node Red???)
+* GG EASY
