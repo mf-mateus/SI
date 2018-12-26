@@ -4,7 +4,7 @@
 ### Getting Started
 * [Tutorial Links](https://docs.google.com/document/d/1Y7-AwB2l0Ygj-erC61ZWclCtR6IDCLgGK_R8bSqs204/edit?usp=sharing) - RPI & ESP Tutorials
 * [Github commands](https://confluence.atlassian.com/bitbucketserver/basic-git-commands-776639767.html) - Basic comands
-* [Report](TBD) - Google Docs Report
+* [Report](https://docs.google.com/document/d/10Hp0AI9e4CDaYOMIwZgMZLruwxW1hJ9rVRKjJwoy5Ew/edit?usp=sharing) - Google Docs Report
 
 ### Project Dev Boards
 * [RaspberryPi](https://www.raspberrypi.org/) - Server Board
