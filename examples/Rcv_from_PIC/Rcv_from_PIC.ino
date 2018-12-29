@@ -1,27 +1,12 @@
-/*
-  Multple Serial test
-
- Receives from the main serial port, sends to the others.
- Receives from serial port 1, sends to the main serial (Serial 0).
-
- This example works only with boards with more than one serial like Arduino Mega, Due, Zero etc
-
- The circuit:
- * Any serial device attached to Serial port 1
- * Serial monitor open on Serial port 0:
-
- created 30 Dec. 2008
- modified 20 May 2012
- by Tom Igoe & Jed Roach
- modified 27 Nov 2015
- by Arturo Guadalupi
-
- This example code is in the public domain.
-
- */
 
 String serialdata="" ;
 boolean stringComplete = false;  // whether the string is complete
+char str_array[20];
+int ldr_1, ldr_2, ldr_3, ldr_4;
+int result;
+int incomingByte = 0;
+
+void serialEvent();
 
 void setup() {
   // initialize both serial ports:
@@ -31,10 +16,25 @@ void setup() {
   serialdata.reserve(200);
 }
 
+
+
 void loop() {
+  serialEvent();
   // print the string when a newline arrives:
   if (stringComplete) {
-    Serial.println(serialdata);
+    //Serial.println(serialdata);
+    serialdata.toCharArray(str_array, 22);
+    //Serial.print("str_array=");
+    //Serial.print(str_array);
+    sscanf(str_array, "<%d,%d,%d,%d>", &ldr_1, &ldr_2, &ldr_3, &ldr_4);
+    //Serial.printf("\nA:%d | B:%d | C:%d | D:%d |",ldr_1,ldr_2,ldr_3,ldr_4);
+    Serial.printf("\n%d,%d,%d,%d",ldr_1,ldr_2,ldr_3,ldr_4);
+    ldr_1=map(ldr_1, 225, 2325, 0, 100);
+    ldr_2=map(ldr_2, 456, 3911, 0, 100);
+    ldr_3=map(ldr_3, 44, 3447, 0, 100);
+    ldr_4=map(ldr_4, 24, 3711, 0, 100);
+    Serial.printf("\nA:%d | B:%d | C:%d | D:%d |",ldr_1,ldr_2,ldr_3,ldr_4);
+    
     // clear the string:
     serialdata = "";
     stringComplete = false;
@@ -47,7 +47,7 @@ void loop() {
  time loop() runs, so using delay inside loop can delay
  response.  Multiple bytes of data may be available.
  */
-void serialEvent() {
+void serialEvent(){
   while (Serial.available()) {
     // get the new byte:
     char inChar = (char)Serial.read();
