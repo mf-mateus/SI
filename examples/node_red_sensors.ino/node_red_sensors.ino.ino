@@ -14,26 +14,36 @@ PubSubClient client(espClient);
 
 
 //======== Global Variables ========//
+
+int temp_refresh_rate = 20000 ; // Set Data Refreshrate to MQTT Broker in ms
+int light_refresh_rate = 200 ; // Set Data Refreshrate to MQTT Broker in ms
 const int led = LED_BUILTIN;
-int temp_refresh_rate = 1000 ; // Set Data Refreshrate to MQTT Broker in ms
+String serialdata="" ;
+boolean stringComplete = false;  // whether the string is complete
+char str_array[20];
+int ldr_1, ldr_2, ldr_3, ldr_4;
+
 
 // Change the credentials below, so your ESP8266 connects to your router
 const char* ssid = "DESKTOP-RR394AO 1491";
 const char* password = "fipasgay";
 
 // Change the variable to your Raspberry Pi IP address, so it connects to your MQTT broker
-const char* mqtt_server = "192.168.137.64";
+const char* mqtt_server = "192.168.137.119";
 
 // Timers auxiliar variables
 long now_temp = millis();
 long lastMeasure_temp = 0;
+
+long now_light = millis();
+long lastMeasure_light = 0;
 
 
 //======== Functions ========//
 void setup_wifi(); // Connect ESP8266 to Router
 void reconnect();
 void callback(String topic, byte* message, unsigned int length) ;
-
+void serialEvent(); // Receive ADC values from PIC24
 
 
 void setup() {
@@ -42,11 +52,12 @@ void setup() {
   pinMode(led, OUTPUT); // Feedback LED
   digitalWrite(led, HIGH); // Write to (HIGH IS OFF)
   
-  Serial.begin(115200); // Begin Serial Comms
+  Serial.begin(19200); // Begin Serial Comms
   setup_wifi(); // Call Start Wifi
   client.setServer(mqtt_server, 1883); // Start Client Server at @Port
   client.setCallback(callback); // ??? No idea #REVER#
 
+  serialdata.reserve(200);
 }
 
 void loop() {
@@ -59,6 +70,51 @@ void loop() {
   if(!client.loop())
     client.connect("ESP8266Client");
 
+  now_light = millis();
+  if (now_light - lastMeasure_light > light_refresh_rate) {
+    lastMeasure_light = now_light;
+    serialEvent();
+    if (stringComplete) {
+      //Serial.println(serialdata);
+      serialdata.toCharArray(str_array, 22);
+      //Serial.print("str_array=");
+      //Serial.print(str_array);
+      sscanf(str_array, "<%d,%d,%d,%d>", &ldr_1, &ldr_2, &ldr_3, &ldr_4);
+      //Serial.printf("\nA:%d | B:%d | C:%d | D:%d |",ldr_1,ldr_2,ldr_3,ldr_4);
+      //Serial.printf("\n%d,%d,%d,%d",ldr_1,ldr_2,ldr_3,ldr_4);
+      // Linear Mapping Fix This for Exp Mapping
+      ldr_1=map(ldr_1, 225, 2325, 0, 2000);
+      ldr_2=map(ldr_2, 456, 3911, 0, 2000);
+      ldr_3=map(ldr_3, 44, 3447, 0, 2000);
+      ldr_4=map(ldr_4, 24, 3711, 0, 2000);
+      //Serial.printf("\nA:%d | B:%d | C:%d | D:%d |",ldr_1,ldr_2,ldr_3,ldr_4);
+      
+      // clear the string:
+      serialdata = "";
+      stringComplete = false;
+    }
+
+    char ldr_a[5],ldr_b[5],ldr_c[5],ldr_d[5];
+    itoa(ldr_1,ldr_a,10);
+    itoa(ldr_2,ldr_b,10);
+    itoa(ldr_3,ldr_c,10);
+    itoa(ldr_4,ldr_d,10);
+//    Serial.print(" %\t Up: ");
+//    Serial.print(ldr_a);
+//    Serial.print(" | ");
+//    Serial.print(ldr_b);
+//    Serial.print(" | ");
+//    Serial.print(ldr_c);
+//    Serial.print(" | ");
+//    Serial.print(ldr_d);
+//    Serial.print(" | ");
+    client.publish("room/light", ldr_a);
+    client.publish("room/light2", ldr_b);
+    client.publish("room/light3", ldr_c);
+    client.publish("room/light4", ldr_d);
+    
+  }
+  
   now_temp = millis();
   // Publishes new temperature and humidity every 30 seconds
   if (now_temp - lastMeasure_temp > temp_refresh_rate) {
@@ -82,32 +138,35 @@ void loop() {
     
     static char humidityTemp[7];
     dtostrf(h, 6, 2, humidityTemp);
-
-    static char adc_value[5];
-    dtostrf(acq,6,2,adc_value);
     
-    Serial.print("\nHumidity: ");
-    Serial.print(h);
-    Serial.print(" %\t Temperature: ");
-    Serial.print(t);
-    Serial.print(" ºC ");
-    Serial.print(" %\t LDR Value: ");
-    Serial.print(acq);
+//    Serial.print("\nHumidity: ");
+//    Serial.print(h);
+//    Serial.print(" %\t Temperature: ");
+//    Serial.print(t);
+//    Serial.print(" ºC ");
     
     // Publishes Temperature and Humidity values
     client.publish("room/temp", temperatureTemp);
     client.publish("room/humd", humidityTemp);
-    client.publish("room/light", adc_value);
-    
-    
-    
-    // Serial.print(hif);
-    // Serial.println(" *F");
   }
 }
 
 
 //======== Functions ========//
+//==== Serial Receive ====//
+void serialEvent(){
+  while (Serial.available()) {
+    // get the new byte:
+    char inChar = (char)Serial.read();
+    // add it to the inputString:
+    serialdata += inChar;
+    // if the incoming character is a newline, set a flag
+    // so the main loop can do something about it:
+    if (inChar == '\n') {
+      stringComplete = true;
+    }
+  }
+}
 
 //==== Connect ESP8266 to Router ====//
 void setup_wifi() {

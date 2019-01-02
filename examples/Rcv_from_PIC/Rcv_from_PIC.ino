@@ -3,8 +3,6 @@ String serialdata="" ;
 boolean stringComplete = false;  // whether the string is complete
 char str_array[20];
 int ldr_1, ldr_2, ldr_3, ldr_4;
-int result;
-int incomingByte = 0;
 
 void serialEvent();
 
@@ -29,11 +27,11 @@ void loop() {
     sscanf(str_array, "<%d,%d,%d,%d>", &ldr_1, &ldr_2, &ldr_3, &ldr_4);
     //Serial.printf("\nA:%d | B:%d | C:%d | D:%d |",ldr_1,ldr_2,ldr_3,ldr_4);
     Serial.printf("\n%d,%d,%d,%d",ldr_1,ldr_2,ldr_3,ldr_4);
-    ldr_1=map(ldr_1, 225, 2325, 0, 100);
-    ldr_2=map(ldr_2, 456, 3911, 0, 100);
-    ldr_3=map(ldr_3, 44, 3447, 0, 100);
-    ldr_4=map(ldr_4, 24, 3711, 0, 100);
-    Serial.printf("\nA:%d | B:%d | C:%d | D:%d |",ldr_1,ldr_2,ldr_3,ldr_4);
+//    ldr_1=map(ldr_1, 225, 2325, 0, 100);
+//    ldr_2=map(ldr_2, 456, 3911, 0, 100);
+//    ldr_3=map(ldr_3, 44, 3447, 0, 100);
+//    ldr_4=map(ldr_4, 24, 3711, 0, 100);
+//    Serial.printf("\nA:%d | B:%d | C:%d | D:%d |",ldr_1,ldr_2,ldr_3,ldr_4);
     
     // clear the string:
     serialdata = "";
