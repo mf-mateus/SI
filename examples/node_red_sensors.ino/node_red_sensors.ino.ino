@@ -14,22 +14,21 @@ PubSubClient client(espClient);
 
 
 //======== Global Variables ========//
-
 int temp_refresh_rate = 20000 ; // Set Data Refreshrate to MQTT Broker in ms
-int light_refresh_rate = 200 ; // Set Data Refreshrate to MQTT Broker in ms
+int light_refresh_rate = 100 ; // Set Data Refreshrate to MQTT Broker in ms
 const int led = LED_BUILTIN;
 String serialdata="" ;
 boolean stringComplete = false;  // whether the string is complete
 char str_array[20];
 int ldr_1, ldr_2, ldr_3, ldr_4;
-
+char ldr_a[5],ldr_b[5],ldr_c[5],ldr_d[5];
 
 // Change the credentials below, so your ESP8266 connects to your router
 const char* ssid = "DESKTOP-RR394AO 1491";
 const char* password = "fipasgay";
 
 // Change the variable to your Raspberry Pi IP address, so it connects to your MQTT broker
-const char* mqtt_server = "192.168.137.119";
+const char* mqtt_server = "192.168.137.50";
 
 // Timers auxiliar variables
 long now_temp = millis();
@@ -93,8 +92,7 @@ void loop() {
       serialdata = "";
       stringComplete = false;
     }
-
-    char ldr_a[5],ldr_b[5],ldr_c[5],ldr_d[5];
+    
     itoa(ldr_1,ldr_a,10);
     itoa(ldr_2,ldr_b,10);
     itoa(ldr_3,ldr_c,10);
